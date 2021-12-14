@@ -1,0 +1,11 @@
+{
+  "name": "nik-ioc-container-js",
+  "version": "1.0.0",
+  "description": "Handler of injected objects in class constructor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nikita-volchok",
+  "license": "ISC"
+}
