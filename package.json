@@ -1,5 +1,5 @@
 {
-  "name": "nik-ioc-container-js",
+  "name": "ioc-container-js",
   "version": "1.0.0",
   "description": "Handler of injected objects in class constructor.",
   "main": "index.js",

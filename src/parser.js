@@ -4,10 +4,16 @@ const getConstPos = file =>
 	file.indexOf('constructor');
 const isClassCase = constPos =>
 	constPos > -1;
-const getStringParams = content => {
-	let constPos = getConstPos(content);
-	return content.slice(constPos + 11, content.indexOf(')', constPos))
-		.replace('(', '');
+const getStringParams = content =>
+	cutBetween(content, 'constructor', ')').replace('(', '');
+const getClassName = content =>
+	cutBetween(content, 'class', '{').replace(/[ ]+/, '');
+const cutBetween = (str, startStr, endStr) => {
+	let pos = str.indexOf(startStr);
+	return str.slice(
+		pos + startStr.length,
+		str.indexOf(endStr, pos)
+	);
 };
 const getArrayParams = paramsString =>
 	paramsString ? paramsString.replace(/\s/g, '').split(',') : [];
@@ -19,11 +25,11 @@ module.exports = path => {
 		let filePath = `${path}/${fileName}`,
 			content = file.getFileContent(filePath),
 			constPos = getConstPos(content),
-			req = require(filePath);
-		modules[req.name] = { module: req };
+			name = getClassName(content);
+		modules[name] = { name };
 		if (isClassCase(constPos)) {
 			let paramsStr = getStringParams(content);
-			modules[req.name].params = getArrayParams(paramsStr);
+			modules[name].params = getArrayParams(paramsStr);
 		}
 	});
 	return modules;
