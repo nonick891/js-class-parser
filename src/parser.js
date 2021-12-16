@@ -2,12 +2,16 @@ let file = require('./file.js');
 
 const getConstPos = file =>
 	file.indexOf('constructor');
+
 const isClassCase = constPos =>
 	constPos > -1;
+
 const getStringParams = content =>
 	cutBetween(content, 'constructor', ')').replace('(', '');
+
 const getClassName = content =>
-	cutBetween(content, 'class', '{').replace(/[ ]+/, '');
+	cutBetween(content, 'class', '{').replace(/ /g, '');
+
 const cutBetween = (str, startStr, endStr) => {
 	let pos = str.indexOf(startStr);
 	return str.slice(
@@ -15,15 +19,14 @@ const cutBetween = (str, startStr, endStr) => {
 		str.indexOf(endStr, pos)
 	);
 };
+
 const getArrayParams = paramsString =>
 	paramsString ? paramsString.replace(/\s/g, '').split(',') : [];
 
-module.exports = path => {
-	let modules = {},
-		classes = file.getFolderFiles(path);
-	classes.forEach(fileName => {
-		let filePath = `${path}/${fileName}`,
-			content = file.getFileContent(filePath),
+const getFolderModules = (classes) => {
+	let modules = {};
+	classes.forEach(filePath => {
+		let content = file.getFileContent(filePath),
 			constPos = getConstPos(content),
 			name = getClassName(content);
 		modules[name] = { name };
@@ -32,5 +35,11 @@ module.exports = path => {
 			modules[name].params = getArrayParams(paramsStr);
 		}
 	});
+	return modules;
+};
+
+module.exports = path => {
+	let classes = file.getFolderFiles(path);
+	let modules = getFolderModules(classes);
 	return modules;
 };
