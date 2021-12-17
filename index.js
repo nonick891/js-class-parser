@@ -1,2 +1,2 @@
-let classParser = require('./src/parser.js');
-module.exports = classParser;
+let crawlEntities = require('./src/entity-crawler.js');
+module.exports = crawlEntities;
