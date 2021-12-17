@@ -1,18 +1,22 @@
 let file = require('./file.js'),
-	classParser = require('./parser/class');
+	classParser = require('./parser/class'),
+	{ unpackArray } = require('./array.js');
 
 /**
  * Modules bag
+ *
  * @type {Object}
  */
 const modulesBag = {};
 
 /**
  * Crawl all folders in depth to collect classes names and parameters
- * @param path {String, Array}
+ *
+ * @param path {String, Array} allow to pass any amount of arguments
  * @returns {Object}
  */
-const crawlEntities = path => {
+const crawlEntities = function(path) {
+	path = unpackArray([...arguments]);
 	setFolderModules(file.getFolderFiles(path));
 	return modulesBag;
 };
@@ -22,6 +26,7 @@ const setFolderModules = files =>
 
 /**
  * Saves modules. Serves for recursive purposes
+ *
  * @param files {Array} contains absolute path to file or folder
  * @param modules {Object} contains .js class information, works as link
  * @returns {*}
