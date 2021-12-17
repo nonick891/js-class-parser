@@ -1,5 +1,5 @@
 let fs = require('fs'),
-	pathN = require('path');
+	pathM = require('path');
 
 const getFileContent = filePath =>
 	fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
@@ -8,21 +8,25 @@ const isSinglePath = folder =>
 	!Array.isArray(folder) && typeof folder === 'string'
 
 const setFile = path => {
-	let files = [];
-	if (pathN.extname(path)) {
-		fs.existsSync(path) ? files.push(path) : false;
-		return files;
-	}
-	let strArray = fs.readdirSync(path);
-	if (!strArray) return files;
-	strArray.forEach(file => files.push(path + '/' + file));
-	return files;
+	if (pathM.extname(path)) return [path];
+	let filesArr = [],
+		pathArr = fs.readdirSync(path);
+	if (!pathArr) return filesArr;
+	pathArr.forEach(file => {
+		filesArr.push(path + '/' + file)
+	});
+	return filesArr;
 };
 
-const getFolderFiles = folderPath => {
-	return isSinglePath(folderPath)
-		? setFile(folderPath)
-		: [].concat.apply([], folderPath.map(setFile));
-}
+const unpackArray = arrayOfArrays =>
+	[].concat.apply([], arrayOfArrays);
 
-module.exports = { getFolderFiles, getFileContent };
+const getFolderFiles = folderPath =>
+	isSinglePath(folderPath)
+		? setFile(folderPath)
+		: unpackArray(folderPath.map(setFile));
+
+const isDirectory = path =>
+	fs.existsSync(path) && fs.lstatSync(path).isDirectory();
+
+module.exports = { getFolderFiles, getFileContent, isDirectory };

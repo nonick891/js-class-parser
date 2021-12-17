@@ -1,45 +1,51 @@
 let file = require('./file.js');
 
-const getConstPos = file =>
-	file.indexOf('constructor');
+const hasParams = file =>
+	file.indexOf('constructor') > -1;
 
-const isClassCase = constPos =>
-	constPos > -1;
+const getParams = content =>
+	getParamsArr(getParamsStr(content));
 
-const getStringParams = content =>
-	cutBetween(content, 'constructor', ')').replace('(', '');
+const getParamsStr = content =>
+	getDataBetween(content, 'constructor', ')').replace('(', '');
+
+const getParamsArr = params =>
+	params ? params.replace(/\s/g, '').split(',') : [];
 
 const getClassName = content =>
-	cutBetween(content, 'class', '{').replace(/ /g, '');
+	getDataBetween(content, 'class', '{').replace(/ /g, '');
 
-const cutBetween = (str, startStr, endStr) => {
-	let pos = str.indexOf(startStr);
+const getDataBetween = (str, initStr, endStr) => {
+	let pos = str.indexOf(initStr);
 	return str.slice(
-		pos + startStr.length,
+		pos + initStr.length,
 		str.indexOf(endStr, pos)
 	);
 };
 
-const getArrayParams = paramsString =>
-	paramsString ? paramsString.replace(/\s/g, '').split(',') : [];
+const getClassModule = path => {
+	let content = file.getFileContent(path),
+		name = getClassName(content),
+		params = hasParams(content) ? getParams(content) : null;
+	return { name, params };
+}
 
-const getFolderModules = (classes) => {
+const getFolderModules = classes => {
 	let modules = {};
-	classes.forEach(filePath => {
-		let content = file.getFileContent(filePath),
-			constPos = getConstPos(content),
-			name = getClassName(content);
-		modules[name] = { name };
-		if (isClassCase(constPos)) {
-			let paramsStr = getStringParams(content);
-			modules[name].params = getArrayParams(paramsStr);
+	classes.forEach(path => {
+		if (!file.isDirectory(path)) {
+			let module = getClassModule(path);
+			modules[module.name] = module;
+		} else {
+			modules = Object.assign({}, modules, getAllModules(path));
 		}
 	});
 	return modules;
 };
 
-module.exports = path => {
+const getAllModules = path => {
 	let classes = file.getFolderFiles(path);
-	let modules = getFolderModules(classes);
-	return modules;
+	return getFolderModules(classes);
 };
+
+module.exports = getAllModules;
