@@ -1,5 +1,12 @@
 let file = require('./file.js');
 
+/**
+ * Modules bag
+ * @type {Object}
+ */
+const modulesBag = {};
+
+// @TODO: extract class parser functions
 const hasParams = file =>
 	file.indexOf('constructor') > -1;
 
@@ -23,29 +30,34 @@ const getDataBetween = (str, initStr, endStr) => {
 	);
 };
 
-const getClassModule = path => {
+const getModule = path => {
 	let content = file.getFileContent(path),
 		name = getClassName(content),
 		params = hasParams(content) ? getParams(content) : null;
-	return { name, params };
+	return { [name]: { name, params, path } };
 }
 
-const getFolderModules = classes => {
-	let modules = {};
-	classes.forEach(path => {
-		if (!file.isDirectory(path)) {
-			let module = getClassModule(path);
-			modules[module.name] = module;
-		} else {
-			modules = Object.assign({}, modules, getAllModules(path));
-		}
-	});
-	return modules;
+const getAllModules = path => {
+	setFolderModules(file.getFolderFiles(path));
+	return modulesBag;
 };
 
-const getAllModules = path => {
-	let classes = file.getFolderFiles(path);
-	return getFolderModules(classes);
-};
+const cpObj = (src, merge) =>
+	Object.assign(src, merge);
+
+/**
+ * Saves modules. Serves recursive purposes
+ * @param files {Array} contains absolute path to file or folder
+ * @param modules {Object} contains .js class information, works as link
+ * @returns {*}
+ */
+const setModules = (files, modules) =>
+	files.map(path => cpObj(modules, getModules(path)))
+
+const setFolderModules = files =>
+	setModules(files, modulesBag);
+
+const getModules = path =>
+	file.isDirectory(path) ? getAllModules(path) : getModule(path);
 
 module.exports = getAllModules;
