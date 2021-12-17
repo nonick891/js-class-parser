@@ -1,2 +1,2 @@
-let crawlEntities = require('./src/entity-crawler.js');
-module.exports = crawlEntities;
+let entityManagerInstance = require('./src/entity-manager.js');
+module.exports = entityManagerInstance;
