@@ -27,12 +27,6 @@ class EntityManager {
 		this.setModules(files, this.modulesBag);
 	}
 
-	getModules(path) {
-		return file.isDirectory(path)
-		       ? this.crawlEntities(path)
-		       : getModule(path);
-	}
-
 	/**
 	 * Saves modules. Serves for recursive purposes
 	 *
@@ -44,6 +38,12 @@ class EntityManager {
 		files.map(path =>
 			cpObj(modules, this.getModules(path))
 		);
+	}
+
+	getModules(path) {
+		return file.isDirectory(path)
+				? this.crawlEntities(path)
+				: getModule(path);
 	}
 
 	/**
@@ -58,9 +58,13 @@ class EntityManager {
 const cpObj = (src, merge) =>
 	Object.assign(src, merge);
 
-const getModule = path => {
-	let parsedClass = classParser.parseClass(file.getFileContent(path));
-	return { [parsedClass.name]: { ...parsedClass, path } };
-}
+const getModule = path =>
+	getObjectParsedClassFile(getParsedClassFiles(path), path);
+
+const getObjectParsedClassFile = (parsedClass, path) =>
+	({ [parsedClass.name]: { ...parsedClass, path } });
+
+const getParsedClassFiles = path =>
+	classParser.parseClass(file.getFileContent(path));
 
 module.exports = new EntityManager();
