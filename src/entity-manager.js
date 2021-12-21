@@ -1,5 +1,6 @@
 let file = require('./file.js'),
-	classParser = require('./parser/class.js'),
+	getFileNamePath = require('./file-name'),
+	parser = require('./parser/class.js'),
 	{ unpackArray } = require('./array.js');
 
 class EntityManager {
@@ -12,19 +13,30 @@ class EntityManager {
 	modulesBag = {};
 
 	/**
-	 * Crawl all folders in depth to collect classes names and parameters
+	 *
+	 * @param {String, Array} entity
+	 * @param {String} fileName
+	 */
+	saveAutoloadListToFile(entity, fileName) {
+		this.crawlEntities(entity);
+		this.saveModules(fileName);
+		this.eraseMemoryModules();
+	}
+
+	/**
+	 * Crawl all folders in depth to collect classes, file names and parameters
 	 *
 	 * @param path {String, Array} allow to pass any amount of arguments
 	 * @returns {Object}
 	 */
 	crawlEntities(path) {
 		path = unpackArray([...arguments]);
-		this.setFolderModules(file.getFolderFiles(path));
+		this.setFolderModules(path);
 		return this.modulesBag;
 	};
 
-	setFolderModules(files) {
-		this.setModules(files, this.modulesBag);
+	setFolderModules(path) {
+		this.setModules(file.getFolderFiles(path), this.modulesBag);
 	}
 
 	/**
@@ -41,9 +53,20 @@ class EntityManager {
 	}
 
 	getModules(path) {
+		if (!path) return false;
 		return file.isDirectory(path)
 				? this.crawlEntities(path)
-				: getModule(path);
+				: parser.parseClass(path);
+	}
+
+	/**
+	 * @param {String} name
+	 */
+	saveModules(name) {
+		file.writeFile(
+			getFileNamePath('./', name),
+			JSON.stringify(this.modulesBag, null, 4)
+		);
 	}
 
 	/**
@@ -51,20 +74,17 @@ class EntityManager {
 	 */
 	eraseMemoryModules() {
 		this.modulesBag = undefined;
-		if (typeof global.gc != 'undefined') global.gc();
+		gcGo();
 	}
 }
 
+const gcGo = () =>
+	tofU(global.gc) ? global.gc() : false;
+
+const tofU = v =>
+	typeof v !== 'undefined';
+
 const cpObj = (src, merge) =>
 	Object.assign(src, merge);
-
-const getModule = path =>
-	getObjectParsedClassFile(getParsedClassFiles(path), path);
-
-const getObjectParsedClassFile = (parsedClass, path) =>
-	({ [parsedClass.name]: { ...parsedClass, path } });
-
-const getParsedClassFiles = path =>
-	classParser.parseClass(file.getFileContent(path));
 
 module.exports = new EntityManager();

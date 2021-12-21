@@ -28,6 +28,16 @@ const isDirectory = path =>
 
 /**
  *
+ * @returns {String}
+ */
+const getRootDir = () =>
+	require.main.filename.split('/node_modules')[0];
+
+const getRelative = path =>
+	path.replace(getRootDir(), '.');
+
+/**
+ *
  * @param path
  * @returns {Array}
  */
@@ -39,13 +49,29 @@ const getFolderFiles = path =>
 const isSinglePath = folder =>
 	!Array.isArray(folder) && typeof folder === 'string'
 
-const getFile = path =>
-	pathM.extname(path) ? [path] : getFilesArr(path);
+const getExtName = path => pathM.extname(path);
+
+const getFile = path => {
+	if (isSkipD(path)) return false;
+	return getExtName(path) ? [path] : getFilesArr(path);
+}
+
+const isSkipD = path =>
+	path.indexOf('node_modules') > -1;
 
 const getFilesArr = path =>
-	fs.readdirSync(path).map(file => path + '/' + file);
+	fs.readdirSync(path).map(file => getF(path, file));
+
+const getF = (path, file) =>
+	isSkipF(file) ? false : `${path}/${file}`;
+
+const isSkipF = path =>
+	path.search(/(.test.js|package-lock.json|webpack.config.js|.version)/g) > -1;
 
 module.exports = {
+	getExtName,
+	getRootDir,
+	getRelative,
 	getFolderFiles,
 	getFileContent,
 	writeFile,

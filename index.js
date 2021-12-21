@@ -1,2 +1,2 @@
-let entityManagerInstance = require('./src/entity-manager.js');
-module.exports = entityManagerInstance;
+
+module.exports = require('./src/entity-manager.js');
