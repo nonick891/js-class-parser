@@ -47,14 +47,21 @@ const getFolderFiles = path =>
 		: unpackArray(path.map(getFile));
 
 const isSinglePath = folder =>
-	!Array.isArray(folder) && typeof folder === 'string'
+	!Array.isArray(folder) && typeof folder === 'string';
 
 const getExtName = path => pathM.extname(path);
 
-const getFile = path => {
-	if (isSkipD(path)) return false;
-	return getExtName(path) ? [path] : getFilesArr(path);
-}
+const getFile = path =>
+	isAvailable(path) ? getFiles(path) : false;
+
+const isAvailable = path =>
+	!isSkipD(path) && isExists(path);
+
+const isExists = path =>
+	fs.existsSync(path);
+
+const getFiles = path =>
+	getExtName(path) ? [path] : getFilesArr(path);
 
 const isSkipD = path =>
 	path.indexOf('node_modules') > -1;

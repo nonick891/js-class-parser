@@ -44,7 +44,7 @@ class EntityManager {
 	 *
 	 * @param files {Array} contains absolute path to file or folder
 	 * @param modules {Object} contains .js class information, works as linked variable
-	 * @returns {*}
+	 * @returns {Array}
 	 */
 	setModules(files, modules) {
 		files.map(path =>
