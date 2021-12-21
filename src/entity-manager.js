@@ -74,11 +74,11 @@ class EntityManager {
 	 */
 	eraseMemoryModules() {
 		this.modulesBag = undefined;
-		gcGo();
+		gcRun();
 	}
 }
 
-const gcGo = () =>
+const gcRun = () =>
 	tofU(global.gc) ? global.gc() : false;
 
 const tofU = v =>

@@ -1,5 +1,5 @@
 {
-  "name": "ioc-container-js",
+  "name": "entity-auditor",
   "version": "1.0.0",
   "description": "Handler of injected objects in class constructor.",
   "main": "index.js",

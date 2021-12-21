@@ -13,6 +13,7 @@ const getParamsArr = params =>
 
 const parseClassName = content =>
 	getDataBetween(content, 'class', '{')
+		.replace(/extends(.*)/gi, '')
 		.replace(/ /g, '');
 
 const getDataBetween = (str, initStr, endStr) =>
