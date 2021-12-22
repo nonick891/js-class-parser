@@ -6,8 +6,7 @@ let file = require('./file.js'),
 class EntityManager {
 
 	/**
-	 * Modules bag
-	 *
+	 * Files info bag
 	 * @type {Object}
 	 */
 	modulesBag = {};
@@ -33,7 +32,7 @@ class EntityManager {
 		path = unpackArray([...arguments]);
 		this.setFolderModules(path);
 		return this.modulesBag;
-	};
+	}
 
 	setFolderModules(path) {
 		this.setModules(file.getFolderFiles(path), this.modulesBag);
@@ -65,8 +64,21 @@ class EntityManager {
 	saveModules(name) {
 		file.writeFile(
 			getFileNamePath('./', name),
-			JSON.stringify(this.modulesBag, null, 4)
+			this.getFormatted(name)
 		);
+	}
+
+	getFormatted(name) {
+		let isJs = file.getExtName(name) === '.js',
+			json = this.getModulesObject("\t", true);
+		return isJs ? `export default ${json}` : json;
+	}
+
+	getModulesObject(space, quoteChange) {
+		let string = JSON.stringify(this.modulesBag, null, space);
+		return quoteChange
+			? string.replace(/\"/gm, "'")
+			: string;
 	}
 
 	/**

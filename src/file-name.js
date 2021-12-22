@@ -10,10 +10,10 @@ const fallBackName = name =>
 	name ? name : 'class_autoload_data';
 
 const fallBackExt = name =>
-	file.getExtName(name) ? name : name + '.json'
+	file.getExtName(name) ? name : name + '.json';
 
 const cleanPath = path =>
-	(path.length > 2) ? path.replace(/[\/]+$/g, '') : path;
+	(path.length > 1) ? path.replace(/[\/]+$/g, '') : path;
 
 const filePath = (path, name) =>
 	`${path}/${name}`;

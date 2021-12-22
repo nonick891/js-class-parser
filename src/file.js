@@ -44,15 +44,21 @@ const getRelative = path =>
 const getFolderFiles = path =>
 	isSinglePath(path)
 		? getFile(path)
-		: unpackArray(path.map(getFile));
+		: getFiles(path);
+
+const getFiles = path =>
+	unpackArray(path.map(getFile));
 
 const isSinglePath = folder =>
 	!Array.isArray(folder) && typeof folder === 'string';
 
-const getExtName = path => pathM.extname(path);
+const getExtName = path =>
+	pathM.extname(path);
 
 const getFile = path =>
-	isAvailable(path) ? getFiles(path) : false;
+	isAvailable(path)
+		? getPathsArr(path)
+		: false;
 
 const isAvailable = path =>
 	!isSkipD(path) && isExists(path);
@@ -60,20 +66,25 @@ const isAvailable = path =>
 const isExists = path =>
 	fs.existsSync(path);
 
-const getFiles = path =>
-	getExtName(path) ? [path] : getFilesArr(path);
+const getPathsArr = path =>
+	getExtName(path)
+		? [path]
+		: getPaths(path);
 
 const isSkipD = path =>
 	path.indexOf('node_modules') > -1;
 
-const getFilesArr = path =>
+const getPaths = path =>
 	fs.readdirSync(path).map(file => getF(path, file));
 
 const getF = (path, file) =>
-	isSkipF(file) ? false : `${path}/${file}`;
+	isSkipF(file) ? false : cleanPath(`${path}/${file}`);
 
 const isSkipF = path =>
-	path.search(/(.test.js|package-lock.json|webpack.config.js|.version)/g) > -1;
+	path.search(/(.test.js|package-lock.json|webpack.config.js|.version|eslint|package.json|index.js|.babel)/g) > -1;
+
+const cleanPath = path =>
+	path.replace(/\/\//g, '/');
 
 module.exports = {
 	getExtName,

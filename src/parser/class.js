@@ -12,9 +12,13 @@ const getParamsArr = params =>
 	params ? params.split(',') : [];
 
 const parseClassName = content =>
-	getDataBetween(content, 'class', '{')
-		.replace(/extends(.*)/gi, '')
-		.replace(/ /g, '');
+	getClassExtendArr(extractClass(content));
+
+const extractClass = content =>
+	getDataBetween(content, 'class', '{').trim();
+
+const getClassExtendArr = str =>
+	str.replace(/ /g, '').split(/extends/gi);
 
 const getDataBetween = (str, initStr, endStr) =>
 	getBetweenPos(str, str.indexOf(initStr), initStr, endStr);
@@ -36,9 +40,14 @@ const getClassData = (content, path) =>
 	);
 
 const getNamedObj = (name, params, path) =>
-	name ? getClassObject(name, params, path) : false
+	name[0] ? getClassObject(name, params, path) : false;
 
 const getClassObject = (name, params, path) =>
-	({ [name]: { name, params, path } })
+	({ [name[0]]: {
+			name: name[0],
+			params, path,
+			extends: name[1]
+		}
+	});
 
 module.exports = { parseClass };
