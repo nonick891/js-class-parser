@@ -64,17 +64,17 @@ class EntityManager {
 	saveModules(name) {
 		file.writeFile(
 			getFileNamePath('./', name),
-			this.getFormatted(name)
+			this.getModulesObject(name)
 		);
 	}
 
-	getFormatted(name) {
+	getModulesObject(name) {
 		let isJs = file.getExtName(name) === '.js',
-			json = this.getModulesObject("\t", true);
+			json = this.getFormatted("\t", true);
 		return isJs ? `export default ${json}` : json;
 	}
 
-	getModulesObject(space, quoteChange) {
+	getFormatted(space, quoteChange) {
 		let string = JSON.stringify(this.modulesBag, null, space);
 		return quoteChange
 			? string.replace(/\"/gm, "'")
