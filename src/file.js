@@ -33,8 +33,9 @@ const isDirectory = path =>
 const getRootDir = () =>
 	require.main.filename.split('/node_modules')[0];
 
-const getRelative = path =>
-	path.replace(getRootDir(), '.');
+const getRelative = (path, root) =>
+	path.replace(getRootDir(), root)
+		.replace('./', root + '/');
 
 /**
  *

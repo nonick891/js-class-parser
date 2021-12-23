@@ -11,15 +11,38 @@ class EntityManager {
 	 */
 	modulesBag = {};
 
+	config = {
+		fileType: 'json',
+		modulesRootPath: './',
+		isRequireWrapped: false,
+	};
+
 	/**
 	 *
 	 * @param {String, Array} entity
 	 * @param {String} fileName
 	 */
 	saveAutoloadListToFile(entity, fileName) {
+		this.setUpConfig(fileName);
 		this.crawlEntities(entity);
 		this.saveModules(fileName);
 		this.eraseMemoryModules();
+	}
+
+	setUpConfig(name) {
+		let isJs = file.getExtName(name) === '.js';
+		this.config = {
+			fileType: isJs ? 'js' : 'json',
+			isRequireWrapped: isJs,
+			modulesRootPath: this.getRelativePath(name)
+		};
+	}
+
+	getRelativePath(name) {
+		let times = name.match(/\/[a-z]+/g, '/').length;
+		return times > 0
+		       ? '../'.repeat(times).replace(/\/$/g, '')
+		       : '.';
 	}
 
 	/**
@@ -55,7 +78,7 @@ class EntityManager {
 		if (!path) return false;
 		return file.isDirectory(path)
 				? this.crawlEntities(path)
-				: parser.parseClass(path);
+				: parser.parseClass(path, this.config);
 	}
 
 	/**
@@ -68,10 +91,26 @@ class EntityManager {
 		);
 	}
 
-	getModulesObject(name) {
-		let isJs = file.getExtName(name) === '.js',
-			json = this.getFormatted("\t", true);
-		return isJs ? `export default ${json}` : json;
+	getModulesObject() {
+		return this.getFileContent(
+			this.getFormatted("\t", true)
+		);
+	}
+
+	getFileContent(content) {
+		return this.isJsConf()
+		       ? this.modifyJs(content)
+		       : content;
+	}
+
+	modifyJs(content) {
+		return `export default ${content}`
+			.replace(/'require\(\\/g, 'require(')
+			.replace(/\\'\)\.default'/g, '\').default');
+	}
+
+	isJsConf() {
+		return this.config.fileType === 'js';
 	}
 
 	getFormatted(space, quoteChange) {

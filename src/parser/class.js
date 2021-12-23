@@ -29,14 +29,14 @@ const getBetweenPos = (str, pos, initStr, endStr) =>
 const getBetween = (str, pos, initStr, endStr) =>
 	str.slice(pos + initStr.length, str.indexOf(endStr, pos));
 
-const parseClass = path =>
-	getClassData(file.getFileContent(path), path);
+const parseClass = (path, config) =>
+	getClassData(file.getFileContent(path), path, config);
 
-const getClassData = (content, path) =>
+const getClassData = (content, path, config) =>
 	getNamedObj(
 		parseClassName(content),
 		getParams(content),
-		file.getRelative(path)
+		getFile(path, config)
 	);
 
 const getNamedObj = (name, params, path) =>
@@ -49,5 +49,16 @@ const getClassObject = (name, params, path) =>
 			extends: name[1]
 		}
 	});
+
+const getFile = (path, config) =>
+	getWrappedPath(
+		file.getRelative(path, config.modulesRootPath),
+		config
+	);
+
+const getWrappedPath = (path, { isRequireWrapped }) =>
+	isRequireWrapped
+		? `require("${path}").default`
+		: path;
 
 module.exports = { parseClass };
