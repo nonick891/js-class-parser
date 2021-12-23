@@ -19,10 +19,12 @@ class EntityManager {
 
 	/**
 	 *
-	 * @param {String, Array} entity
+	 * @param {String, Array} entity to include in result file
 	 * @param {String} fileName
+	 * @param exclude {String, Array} entity to exclude from result file
 	 */
-	saveAutoloadListToFile(entity, fileName) {
+	saveAutoloadListToFile(entity, fileName, exclude) {
+		this.excluded = Array.isArray(exclude) ? exclude : [exclude];
 		this.setUpConfig(fileName);
 		this.crawlEntities(entity);
 		this.saveModules(fileName);
@@ -75,10 +77,14 @@ class EntityManager {
 	}
 
 	getModules(path) {
-		if (!path) return false;
+		if (!path || this.isExcluded(path)) return false;
 		return file.isDirectory(path)
 				? this.crawlEntities(path)
 				: parser.parseClass(path, this.config);
+	}
+
+	isExcluded(path) {
+		return this.excluded.find(p => path.indexOf(p) > -1);
 	}
 
 	/**
