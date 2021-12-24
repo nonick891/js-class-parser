@@ -1,7 +1,7 @@
 let file = require('./file.js'),
 	getFileNamePath = require('./file-name'),
 	parser = require('./parser/class.js'),
-	{ unpackArray } = require('./array.js');
+	{ unpackArray, getArray } = require('./array.js');
 
 class EntityManager {
 
@@ -24,7 +24,7 @@ class EntityManager {
 	 * @param exclude {String, Array} entity to exclude from result file
 	 */
 	saveAutoloadListToFile(entity, fileName, exclude) {
-		this.excluded = Array.isArray(exclude) ? exclude : [exclude];
+		this.excluded = getArray(exclude);
 		this.setUpConfig(fileName);
 		this.crawlEntities(entity);
 		this.saveModules(fileName);

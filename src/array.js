@@ -1,4 +1,7 @@
 const unpackArray = arrayOfArrays =>
 	[].concat.apply([], arrayOfArrays);
 
-module.exports = { unpackArray };
+const getArray = arr =>
+	Array.isArray(arr) ? arr : [arr];
+
+module.exports = { unpackArray, getArray };
