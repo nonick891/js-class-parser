@@ -9,7 +9,7 @@ const parseParams = content =>
 		.replace(/\s/g, '');
 
 const getParamsArr = params =>
-	params ? params.split(',') : [];
+	params ? params.split(',') : false;
 
 const parseClassName = content =>
 	getClassExtendArr(extractClass(content));
@@ -18,7 +18,7 @@ const extractClass = content =>
 	getDataBetween(content, 'class', '{').trim();
 
 const getClassExtendArr = str =>
-	str.replace(/ /g, '').split(/extends/gi);
+	str.replace(/ /g, '').split(/extends/gi)[0];
 
 const getDataBetween = (str, initStr, endStr) =>
 	getBetweenPos(str, str.indexOf(initStr), initStr, endStr);
@@ -36,19 +36,23 @@ const getClassData = (content, path, config) =>
 	getNamedObj(
 		parseClassName(content),
 		getParams(content),
-		getFile(path, config)
+		getFile(path, config),
+		getInjectType(content, config)
 	);
 
-const getNamedObj = (name, params, path) =>
-	name[0] ? getClassObject(name, params, path) : false;
+const getNamedObj = (name, params, path, inject) =>
+	name ? getClassObject(name, params, path, inject) : false;
 
-const getClassObject = (name, params, path) =>
-	({ [name[0]]: {
-			name: name[0],
-			params, path,
-			extends: name[1]
-		}
+const getClassObject = (name, params, path, inject) =>
+	({ [name]: Object.assign(
+			{ name, path },
+			getValid('params', params),
+			getValid('inject', inject),
+		)
 	});
+
+const getValid = (name, value) =>
+	value ? { [name]: value } : {};
 
 const getFile = (path, config) =>
 	getWrappedPath(
@@ -60,5 +64,15 @@ const getWrappedPath = (path, { isRequireWrapped }) =>
 	isRequireWrapped
 		? `require("${path}").default`
 		: path;
+
+const getInjectType = (content, {fileType}) =>
+	fileType === 'js' ? getObjectType(content) : null;
+
+let injectsReg = /@injects (prototype|instance)/i;
+
+const getObjectType = content =>
+	injectsReg.test(content)
+		? content.match(injectsReg)[1]
+		: null;
 
 module.exports = { parseClass };
