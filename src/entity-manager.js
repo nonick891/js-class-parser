@@ -21,7 +21,7 @@ class EntityManager {
 	 *
 	 * @param {String, Array} entity to include in result file
 	 * @param {String} fileName
-	 * @param exclude {String, Array} entity to exclude from result file
+	 * @param {String, Array} exclude entity to exclude from result file
 	 */
 	saveAutoloadListToFile(entity, fileName, exclude) {
 		this.excluded = getArray(exclude);
@@ -38,6 +38,7 @@ class EntityManager {
 			isRequireWrapped: isJs,
 			modulesRootPath: this.getRelativePath(name)
 		};
+		this.modulesBag = !this.modulesBag ? {} : this.modulesBag;
 	}
 
 	getRelativePath(name) {
@@ -91,9 +92,11 @@ class EntityManager {
 	 * @param {String} name
 	 */
 	saveModules(name) {
+		let modulesObject = this.getModulesObject(name);
+		if (!modulesObject) return false;
 		file.writeFile(
 			getFileNamePath('./', name),
-			this.getModulesObject(name)
+			modulesObject
 		);
 	}
 
@@ -104,6 +107,7 @@ class EntityManager {
 	}
 
 	getFileContent(content) {
+		if (!content) return false;
 		return this.isJsConf()
 		       ? this.modifyJs(content)
 		       : content;
@@ -120,6 +124,7 @@ class EntityManager {
 	}
 
 	getFormatted(space, quoteChange) {
+		if (!this.modulesBag) return false;
 		let string = JSON.stringify(this.modulesBag, null, space);
 		return quoteChange
 			? string.replace(/\"/gm, "'")
@@ -142,6 +147,6 @@ const tofU = v =>
 	typeof v !== 'undefined';
 
 const cpObj = (src, merge) =>
-	Object.assign(src, merge);
+	Object.assign(src ? src : {}, merge ? merge : {});
 
 module.exports = new EntityManager();

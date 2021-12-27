@@ -48,7 +48,7 @@ const getFolderFiles = path =>
 		: getFiles(path);
 
 const getFiles = path =>
-	unpackArray(path.map(getFile));
+	unpackArray(path.map(getFile)).filter(Boolean);
 
 const isSinglePath = folder =>
 	!Array.isArray(folder) && typeof folder === 'string';

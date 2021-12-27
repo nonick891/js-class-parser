@@ -43,3 +43,28 @@ export default {
     }
 }
 ```
+
+##Hot reload
+
+Maintain of watcher with dependency injection might be a tricky part. Consider to use webpack native progress plugin:
+
+```
+let entityAuditor = require('entity-auditor');
+
+module.exports = {
+    ...
+    plugins: [
+        ...
+        new webpack.ProgressPlugin((percentage) => {
+            if (percentage === 1) {
+                entityAuditor.saveAutoloadListToFile(
+                    includePaths, 
+                    fileOutput, 
+                    excludePaths
+                );
+            }
+        })
+        ...
+    ]
+}
+```
