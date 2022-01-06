@@ -18,7 +18,7 @@ const extractClass = content =>
 	getDataBetween(content, 'class', '{').trim();
 
 const getClassExtendArr = str =>
-	str.replace(/ /g, '').split(/extends/gi)[0];
+	str.replace(/ /g, '').split(/extends/gi);
 
 const getDataBetween = (str, initStr, endStr) =>
 	getBetweenPos(str, str.indexOf(initStr), initStr, endStr);
@@ -41,11 +41,12 @@ const getClassData = (content, path, config) =>
 	);
 
 const getNamedObj = (name, params, path, inject) =>
-	name ? getClassObject(name, params, path, inject) : false;
+	name[0] ? getClassObject(name, params, path, inject) : false;
 
 const getClassObject = (name, params, path, inject) =>
-	({ [name]: Object.assign(
+	({ [name[0]]: Object.assign(
 			{ name, path },
+			{ extends: name[1] },
 			getValid('params', params),
 			getValid('inject', inject),
 		)
