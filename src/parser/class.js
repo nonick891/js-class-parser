@@ -45,7 +45,7 @@ const getNamedObj = (name, params, path, inject) =>
 
 const getClassObject = (name, params, path, inject) =>
 	({ [name[0]]: Object.assign(
-			{ name, path },
+			{ name: name[0], path },
 			{ extends: name[1] },
 			getValid('params', params),
 			getValid('inject', inject),
