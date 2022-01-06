@@ -14,7 +14,7 @@ class EntityManager {
 	config = {
 		fileType: 'json',
 		modulesRootPath: './',
-		isRequireWrapped: false,
+		isRequireWrapped: false
 	};
 
 	/**

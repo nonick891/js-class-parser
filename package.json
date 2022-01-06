@@ -1,7 +1,7 @@
 {
   "name": "entity-auditor",
   "version": "1.0.0",
-  "description": "Handler of injected objects in class constructor.",
+  "description": "Parse classes constructor params as injected objects.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
