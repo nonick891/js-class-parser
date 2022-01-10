@@ -14,9 +14,15 @@ const getFileContent = filePath =>
  *
  * @param path
  * @param content
+ * @param forceTouch
  */
-const writeFile = (path, content) =>
+const writeFile = (path, content, forceTouch) => {
+	if (isSame(path, content) && !forceTouch) return;
 	fs.writeFileSync(path, content);
+}
+
+const isSame = (path, content) =>
+	getFileContent(path) === content;
 
 /**
  *
