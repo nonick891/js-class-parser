@@ -1,7 +1,8 @@
 let file = require('./file.js'),
-	getFileNamePath = require('./file-name'),
 	parser = require('./parser/class.js'),
-	{ unpackArray, getArray } = require('./array.js');
+	{ getFileNamePath } = require('./file-name'),
+	{ unpackArray, getArray } = require('./array.js'),
+	{ gcRun, cpObj } = require('./helper');
 
 class EntityManager {
 
@@ -139,14 +140,5 @@ class EntityManager {
 		gcRun();
 	}
 }
-
-const gcRun = () =>
-	tofU(global.gc) ? global.gc() : false;
-
-const tofU = v =>
-	typeof v !== 'undefined';
-
-const cpObj = (src, merge) =>
-	Object.assign(src ? src : {}, merge ? merge : {});
 
 module.exports = new EntityManager();

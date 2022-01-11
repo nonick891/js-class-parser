@@ -18,4 +18,4 @@ const cleanPath = path =>
 const filePath = (path, name) =>
 	`${path}/${name}`;
 
-module.exports = getFileNamePath;
+module.exports = { getFileNamePath };
