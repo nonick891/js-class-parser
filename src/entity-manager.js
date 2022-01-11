@@ -93,7 +93,7 @@ class EntityManager {
 	 * @param {String} name
 	 */
 	saveModules(name) {
-		let modulesObject = this.getModulesObject(name);
+		let modulesObject = this.getModulesString(name);
 		if (!modulesObject) return false;
 		file.writeFile(
 			getFileNamePath('./', name),
@@ -101,7 +101,7 @@ class EntityManager {
 		);
 	}
 
-	getModulesObject() {
+	getModulesString() {
 		return this.getFileContent(
 			this.getFormatted("\t", true)
 		);

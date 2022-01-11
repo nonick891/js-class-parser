@@ -1,8 +1,12 @@
-export const tofU = v =>
+const tofU = v =>
 	typeof v !== 'undefined';
 
-export const gcRun = () =>
+const gcRun = () =>
 	tofU(global.gc) ? global.gc() : false;
 
-export const cpObj = (src, merge) =>
+const cpObj = (src, merge) =>
 	Object.assign(src ? src : {}, merge ? merge : {});
+
+module.exports = {
+	gcRun, cpObj
+}
