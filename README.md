@@ -1,7 +1,7 @@
-##Class parser
+## Class parser
 Scan folders and single files for javascript native classes. Converts the list of classes into `.json` or `.js` file.
 
-###JS file
+### JS file
 Can be used for dependency injection purposes. Output `require` function in path variable.
 
 File `test.js`:
@@ -44,7 +44,7 @@ export default {
 }
 ```
 
-##Hot reload
+## Hot reload
 
 Maintain of watcher with dependency injection might be a tricky part. Consider to use webpack native progress plugin:
 
