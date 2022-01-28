@@ -1,6 +1,6 @@
 let file = require('./file.js'),
 	parser = require('./parser/class.js'),
-	{ getFileNamePath } = require('./file-name'),
+	{ getFileNamePath, getRelativePath } = require('./file-name'),
 	{ unpackArray, getArray } = require('./array.js'),
 	{ gcRun, cpObj } = require('./helper');
 
@@ -35,18 +35,11 @@ class EntityManager {
 	setUpConfig(name) {
 		let isJs = file.getExtName(name) === '.js';
 		this.config = {
-			fileType: isJs ? 'js' : 'json',
 			isRequireWrapped: isJs,
-			modulesRootPath: this.getRelativePath(name)
+			fileType: isJs ? 'js' : 'json',
+			modulesRootPath: getRelativePath(name)
 		};
 		this.modulesBag = !this.modulesBag ? {} : this.modulesBag;
-	}
-
-	getRelativePath(name) {
-		let times = name.match(/\/[a-z]+/g, '/').length;
-		return times > 0
-		       ? '../'.repeat(times).replace(/\/$/g, '')
-		       : '.';
 	}
 
 	/**

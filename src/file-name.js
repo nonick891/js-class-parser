@@ -1,5 +1,11 @@
 const file = require('./file.js');
 
+/**
+ *
+ * @param path
+ * @param name
+ * @returns {string}
+ */
 const getFileNamePath = (path, name) =>
 	filePath(cleanPath(path), handleName(name));
 
@@ -18,4 +24,16 @@ const cleanPath = path =>
 const filePath = (path, name) =>
 	`${path}/${name}`;
 
-module.exports = { getFileNamePath };
+/**
+ *
+ * @param name
+ * @returns {string|string}
+ */
+const getRelativePath = name => {
+	let times = name.match(/\/[a-z]+/g, '/').length;
+	return times > 0
+	       ? '../'.repeat(times).replace(/\/$/g, '')
+	       : '.';
+}
+
+module.exports = { getFileNamePath, getRelativePath };
