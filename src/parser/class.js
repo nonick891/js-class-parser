@@ -15,7 +15,7 @@ const parseClassName = content =>
 	getClassExtendArr(extractClass(content));
 
 const extractClass = content =>
-	getDataBetween(content, 'class', '{').trim();
+	getDataBetween(content, 'export default class', '{').trim();
 
 const getClassExtendArr = str =>
 	str.replace(/ /g, '').split(/extends/gi);
