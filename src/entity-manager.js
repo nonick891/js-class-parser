@@ -27,9 +27,7 @@ class EntityManager {
 	saveAutoloadListToFile(entity, fileName, exclude) {
 		this.excluded = getArray(exclude);
 		this.setUpConfig(fileName);
-		this.crawlEntities(entity);
-		this.saveModules(fileName);
-		this.eraseMemoryModules();
+		this.buildModuleFile(entity, fileName);
 	}
 
 	setUpConfig(name) {
@@ -40,6 +38,12 @@ class EntityManager {
 			modulesRootPath: getRelativePath(name)
 		};
 		this.modulesBag = !this.modulesBag ? {} : this.modulesBag;
+	}
+
+	buildModuleFile(entity, fileName) {
+		this.crawlEntities(entity);
+		this.saveModules(fileName);
+		this.eraseMemoryModules();
 	}
 
 	/**
@@ -109,8 +113,12 @@ class EntityManager {
 
 	modifyJs(content) {
 		return `export default ${content}`
-			.replace(/'require\(\\/g, 'require(')
-			.replace(/\\'\)\.default'/g, '\').default');
+			.replace(
+				/\'\(\(\) => { try { return require\((.*)\).default; } catch \(e\) { return false; }}\)\(\)\'/gm,
+				string => {
+					return string.slice(1, -1).replace(/\\/gm, '')
+				}
+			);
 	}
 
 	isJsConf() {
