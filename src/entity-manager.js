@@ -1,5 +1,6 @@
 let file = require('./file.js'),
 	parser = require('./parser/class.js'),
+	EntityManagerPlugin = require('./entity-manager-plugin'),
 	{ getFileNamePath, getRelativePath } = require('./file-name'),
 	{ unpackArray, getArray } = require('./array.js'),
 	{ gcRun, cpObj } = require('./helper');
@@ -23,6 +24,8 @@ class EntityManager {
 		modulesRootPath: './',
 		isRequireWrapped: false
 	};
+
+	EntityManagerPlugin = EntityManagerPlugin;
 
 	/**
 	 * @param {Object} options {
@@ -62,6 +65,12 @@ class EntityManager {
 		this.watchers[folder] = file.watchFolder({
 			folder, create, update: create, error: create
 		});
+	}
+
+	removeWatchers() {
+		Object.keys(this.watchers).map(folder =>
+			this.watchers[folder].close()
+		);
 	}
 
 	initModulesBag() {
