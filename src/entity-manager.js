@@ -136,7 +136,7 @@ class EntityManager {
 	modifyJs(content) {
 		return `export default ${content}`
 			.replace(
-				/\'\(\(\) => { try { return require\((.*)\).default; } catch \(e\) { return false; }}\)\(\)\'/gm,
+				/\'require\((.*)\).default\'/gm,
 				string => {
 					return string.slice(1, -1).replace(/\\/gm, '')
 				}

@@ -63,7 +63,7 @@ const getFile = (path, config) =>
 
 const getWrappedPath = (path, { isRequireWrapped }) =>
 	isRequireWrapped
-		? `(() => { try { return require("${path}").default; } catch (e) { return false; }})()`
+		? `require("${path}").default`
 		: path;
 
 const getInjectType = (content, {fileType}) =>
