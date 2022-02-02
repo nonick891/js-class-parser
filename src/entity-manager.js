@@ -12,6 +12,12 @@ class EntityManager {
 	 */
 	modulesBag = {};
 
+	/**
+	 * Watcher list of directories, launches rebuild on change.
+	 * @type {Object}
+	 */
+	watchers = {};
+
 	config = {
 		fileType: 'json',
 		modulesRootPath: './',
@@ -19,31 +25,47 @@ class EntityManager {
 	};
 
 	/**
-	 *
-	 * @param {String, Array} entity to include in result file
-	 * @param {String} fileName
-	 * @param {String, Array} exclude entity to exclude from result file
+	 * @param {Object} options {
+	 *  entity <{String, Array} classes includes in modules file>,
+	 *  fileName <{String}>,
+	 *  exclude <{String, Array} entity to exclude from result file>,
+	 *  watch <{String} watch folder for new js class files>
+	 * }
 	 */
-	saveAutoloadListToFile(entity, fileName, exclude) {
-		this.excluded = getArray(exclude);
-		this.setUpConfig(fileName);
-		this.buildModuleFile(entity, fileName);
+	initModuleBuilder(options) {
+		this.setUpConfig(options);
+		this.buildModuleFile();
 	}
 
-	setUpConfig(name) {
-		let isJs = file.getExtName(name) === '.js';
+	setUpConfig({entity, fileName, exclude, watch}) {
+		this.excluded = getArray(exclude);
+		let isJs = file.getExtName(fileName) === '.js';
 		this.config = {
+			name: fileName, entity, watch,
 			isRequireWrapped: isJs,
 			fileType: isJs ? 'js' : 'json',
-			modulesRootPath: getRelativePath(name)
+			modulesRootPath: getRelativePath(fileName)
 		};
-		this.modulesBag = !this.modulesBag ? {} : this.modulesBag;
 	}
 
-	buildModuleFile(entity, fileName) {
-		this.crawlEntities(entity);
-		this.saveModules(fileName);
+	buildModuleFile() {
+		this.initModulesBag();
+		this.addWatcher(this.config.watch);
+		this.crawlEntities(this.config.entity);
+		this.saveModules(this.config.name);
 		this.eraseMemoryModules();
+	}
+
+	addWatcher(folder) {
+		if (!folder || this.watchers[folder]) return false;
+		let create = this.buildModuleFile.bind(this);
+		this.watchers[folder] = file.watchFolder({
+			folder, create, update: create, error: create
+		});
+	}
+
+	initModulesBag() {
+		this.modulesBag = !this.modulesBag ? {} : this.modulesBag;
 	}
 
 	/**

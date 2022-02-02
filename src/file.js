@@ -10,6 +10,37 @@ let fs = require('fs'),
 const getFileContent = filePath =>
 	fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
 
+const watchFolder = ({folder, create, update, error}) => {
+	let watcher = fs.watch(
+		folder, { recursive: true },
+		getWatchHandler(folder, fn(create), fn(update))
+	);
+	watcher.on('error',
+		() => !fs.existsSync(folder)
+			? fn(error).call() && watcher.close()
+			: false
+	);
+	return watcher;
+}
+
+const fn = fn =>
+	fn ? fn : ()=>{};
+
+const getWatchHandler = (folder, create, update) => {
+	return function(eventType, filename) {
+		if (!filename || filename.indexOf('~') === -1) return;
+		let file = `${folder}/${filename.replace('~', '')}`,
+			{ birthtimeMs } = fs.statSync(file);
+		if (!birthtimeMs || !findClass(file)) return;
+		(Date.now() - birthtimeMs) < 100 && eventType === 'rename'
+			? create.call()
+			: update.call();
+	}
+};
+
+const findClass = file =>
+	getFileContent(file).indexOf('export default class') > -1;
+
 /**
  *
  * @param path
@@ -100,5 +131,6 @@ module.exports = {
 	getFolderFiles,
 	getFileContent,
 	writeFile,
-	isDirectory
+	isDirectory,
+	watchFolder
 };
