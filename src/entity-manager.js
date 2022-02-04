@@ -1,6 +1,6 @@
 let file = require('./file.js'),
 	parser = require('./parser/class.js'),
-	EntityManagerPlugin = require('./entity-manager-plugin'),
+	getHotReloadPlugin = require('./entity-manager-plugin'),
 	{ getFileNamePath, getRelativePath } = require('./file-name'),
 	{ unpackArray, getArray } = require('./array.js'),
 	{ gcRun, cpObj } = require('./helper');
@@ -25,7 +25,7 @@ class EntityManager {
 		isRequireWrapped: false
 	};
 
-	EntityManagerPlugin = EntityManagerPlugin;
+	HotReloadPlugin = (getHotReloadPlugin.bind(this))();
 
 	/**
 	 * @param {Object} options {

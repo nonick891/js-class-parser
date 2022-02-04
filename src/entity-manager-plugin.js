@@ -1,16 +1,19 @@
-module.exports = class EntityManagerPlugin {
-	constructor(entityManager) {
-		this.entityManager = entityManager;
-	}
-	apply(compiler) {
-		compiler.hooks.watchRun.tap('EntityManagerPlugin',
-			this.entityManager.buildModuleFile.bind(this.entityManager)
-		);
-		compiler.hooks.watchClose.tap('EntityManagerPlugin',
-			this.entityManager.removeWatchers.bind(this.entityManager)
-		);
-		compiler.hooks.failed.tap('EntityManagerPlugin',
-			this.entityManager.removeWatchers.bind(this.entityManager)
-		);
-	}
-}
+module.exports = function getHotReloadPlugin() {
+	const events = {
+			watchRun: 'buildModuleFile',
+			watchClose: 'removeWatchers',
+			failed: 'removeWatchers'
+		};
+	function HotReloadPlugin() {}
+	const PLUGIN_NAME = HotReloadPlugin.name;
+	/**
+	 * @this EntityManager
+	 * @param {Object} compiler
+	 */
+	HotReloadPlugin.prototype.apply = function({ hooks }) {
+		Object.keys(events).map(name => hooks[name].tap(PLUGIN_NAME,
+			this[events[name]].bind(this)
+		));
+	}.bind(this);
+	return HotReloadPlugin;
+};
