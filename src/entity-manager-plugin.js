@@ -1,19 +1,33 @@
-module.exports = function getHotReloadPlugin() {
-	const events = {
-			watchRun: 'buildModuleFile',
-			watchClose: 'removeWatchers',
-			failed: 'removeWatchers'
-		};
-	function HotReloadPlugin() {}
-	const PLUGIN_NAME = HotReloadPlugin.name;
+/**
+ * IDE helper for webpack compiler
+ * @type {{hooks: {watchRun: {tap: function}, watchClose: {tap: function}, failed: {tap: function}}}}
+ */
+module.exports = function getWatchPlugin() {
+
+	function EntityManagerWatchPlugin() {}
 	/**
 	 * @this EntityManager
 	 * @param {Object} compiler
 	 */
-	HotReloadPlugin.prototype.apply = function({ hooks }) {
-		Object.keys(events).map(name => hooks[name].tap(PLUGIN_NAME,
-			this[events[name]].bind(this)
-		));
+	EntityManagerWatchPlugin.prototype.apply = function(compiler) {
+		compiler.hooks.watchRun.tap(
+			'EntityManagerWatchPlugin',
+			this.buildModuleFile.bind(this)
+		);
+		compiler.hooks.watchClose.tap(
+			'EntityManagerWatchPlugin',
+			this.removeWatchers.bind(this)
+		);
+		compiler.hooks.failed.tap(
+			'EntityManagerWatchPlugin',
+			this.removeWatchers.bind(this)
+		);
+		compiler.hooks.done.tap(
+			'EntityManagerWatchPlugin',
+			process.argv.indexOf('--watch') === -1
+				? this.removeWatchers.bind(this)
+				: function(){}
+		);
 	}.bind(this);
-	return HotReloadPlugin;
+	return EntityManagerWatchPlugin;
 };
