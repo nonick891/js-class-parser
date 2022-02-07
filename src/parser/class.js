@@ -1,4 +1,5 @@
 const file = require('../file.js');
+const { stringModifier } = require('../modifier');
 
 const getParams = content =>
 	getParamsArr(parseParams(content));
@@ -63,7 +64,7 @@ const getFile = (path, config) =>
 
 const getWrappedPath = (path, { isRequireWrapped }) =>
 	isRequireWrapped
-		? `require("${path}").default`
+		? stringModifier(path)
 		: path;
 
 const getInjectType = (content, {fileType}) =>

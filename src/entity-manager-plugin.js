@@ -1,6 +1,6 @@
 /**
  * IDE helper for webpack compiler
- * @type {{hooks: {watchRun: {tap: function}, watchClose: {tap: function}, failed: {tap: function}}}}
+ * @type {{hooks: {watchRun: {tap: Function}, watchClose: {tap: Function}, failed: {tap: Function}}}}
  */
 module.exports = function getWatchPlugin() {
 

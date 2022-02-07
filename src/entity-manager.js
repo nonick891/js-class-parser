@@ -3,7 +3,8 @@ let file = require('./file.js'),
 	getWatchPlugin = require('./entity-manager-plugin'),
 	{ getFileNamePath, getRelativePath } = require('./file-name'),
 	{ unpackArray, getArray } = require('./array.js'),
-	{ gcRun, cpObj } = require('./helper');
+	{ gcRun, cpObj } = require('./helper'),
+	{ regModifier } = require('./modifier');
 
 class EntityManager {
 
@@ -145,7 +146,7 @@ class EntityManager {
 	modifyJs(content) {
 		return `export default ${content}`
 			.replace(
-				/\'require\((.*)\).default\'/gm,
+				regModifier,
 				string => {
 					return string.slice(1, -1).replace(/\\/gm, '')
 				}
