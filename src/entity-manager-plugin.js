@@ -1,10 +1,13 @@
 /**
  * IDE helper for webpack compiler
  * @type {{hooks: {watchRun: {tap: Function}, watchClose: {tap: Function}, failed: {tap: Function}}}}
+ * @this EntityManager
  */
 module.exports = function getWatchPlugin() {
-
-	function EntityManagerWatchPlugin() {}
+	let entityManager = this;
+	function EntityManagerWatchPlugin(options) {
+		entityManager.initModuleBuilder(options);
+	}
 	/**
 	 * @this EntityManager
 	 * @param {Object} compiler

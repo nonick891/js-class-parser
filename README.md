@@ -5,8 +5,8 @@ Scan folders and single files for javascript native classes. Converts the list o
 Can be used for dependency injection purposes. Output `require` function in path variable.
 
 File `test.js`:
-```
-export default Test {
+```js
+export default class Test {
     constructor(AnotherInstanceClass) {
         // Will parse parameter as class name
         this.another = AnotherInstanceClass;
@@ -16,18 +16,18 @@ export default Test {
 
 Parsing `@injects` param in class js DocBlock for detecting of new instance or prototype passing. Can have only two values `instance` or `prototype`.
 File `another-instance-class.js`:
-```
+```js
 /**
  * @injects instance
  */
- export default AnotherInstanceClass {
+ export default class AnotherInstanceClass {
     showInfo() {
         console.log('test output');
     }
  }
 ```
 Output file with parsed classes example:
-```
+```js
 export default {
     'Test': {
         'name': 'Test',
@@ -44,27 +44,34 @@ export default {
 }
 ```
 
+## Compilation build
+
+```js
+let entityAuditor = require('entity-auditor');
+
+entityAuditor.initModuleBuilder({
+	classFilesFolder,
+	outputFilePath,
+	excludeFiles,
+	detectNewFiles
+});
+
+module.exports = {};
+```
+
 ## Hot reload
 
-Maintain of watcher with dependency injection might be a tricky part. Consider to use webpack native progress plugin:
-
-```
+```js
 let entityAuditor = require('entity-auditor');
 
 module.exports = {
-    ...
     plugins: [
-        ...
-        new webpack.ProgressPlugin((percentage) => {
-            if (percentage === 1) {
-                entityAuditor.saveAutoloadListToFile(
-                    includePaths, 
-                    fileOutput, 
-                    excludePaths
-                );
-            }
-        })
-        ...
+        new entityManager.EntityManagerWatchPlugin({
+            classFilesFolder,
+            outputFilePath,
+            excludeFiles,
+            detectNewFiles
+        }),
     ]
 }
 ```

@@ -147,9 +147,7 @@ class EntityManager {
 		return `export default ${content}`
 			.replace(
 				regModifier,
-				string => {
-					return string.slice(1, -1).replace(/\\/gm, '')
-				}
+				string => string.slice(1, -1).replace(/\\/gm, '')
 			);
 	}
 
