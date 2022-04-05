@@ -70,7 +70,7 @@ const getWrappedPath = (path, { isRequireWrapped }) =>
 const getInjectType = (content, {fileType}) =>
 	fileType === 'js' ? getObjectType(content) : null;
 
-let injectsReg = /@injects (prototype|instance)/i;
+let injectsReg = /@injects (prototype|instance|singleton)/i;
 
 const getObjectType = content =>
 	injectsReg.test(content)
