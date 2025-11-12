@@ -78,7 +78,7 @@ module.exports = {
 
 Example container for dependency managing:
 
-```
+```js
 class Container {
 	constructor() {
 		this._services = new Map();
